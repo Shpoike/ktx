@@ -25,7 +25,7 @@ int weapon_impulse_codes[] =
 
 void TeamplayReportVisiblePowerups(gedict_t *player)
 {
-	unsigned int clientFlag = ClientFlag(player);
+	SETUPVISIBILITY(player);
 	gedict_t *opponent;
 
 	// Assumes that visclients match
@@ -33,7 +33,7 @@ void TeamplayReportVisiblePowerups(gedict_t *player)
 	{
 		qbool diff_team = opponent->k_teamnum != player->k_teamnum;
 		qbool powerups = (int)opponent->s.v.items & (IT_QUAD | IT_INVULNERABILITY);
-		qbool visible = (opponent->visclients & clientFlag);
+		qbool visible = CHECKVISIBILITY(opponent);
 
 		if (diff_team && powerups && visible && (opponent->fb.last_mm2_spot < g_globalvars.time))
 		{

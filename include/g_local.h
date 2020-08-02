@@ -174,6 +174,30 @@ typedef enum
 	lsRACE
 } lsType_t; // lastscores type
 
+
+//Extension builtins
+// The order of these don't matter, they'll be blindly assigned to slots without conflicting with extras other engines try to add to core.
+// They do need indexes that don't conflict with gameImport_t though.
+#define G_EXTENSIONS_FIRST 128
+enum
+{
+	G_SETEXTFIELD = G_EXTENSIONS_FIRST,
+	G_GETEXTFIELD,
+	G_CHANGELEVEL_HUB,
+	G_URI_QUERY,
+	G_PARTICLEEFFECTNUM,
+	G_TRAILPARTICLES,
+	G_POINTPARTICLES,
+	G_CLIENTSTAT,
+	G_POINTERSTAT,
+	G_VISIBLETO,
+
+
+	G_EXTENSIONS_LAST
+};
+extern qbool haveextensiontab[G_EXTENSIONS_LAST-G_EXTENSIONS_FIRST];
+#define HAVEEXTENSION(idx) haveextensiontab[idx - G_EXTENSIONS_FIRST]
+
 #define DEATHTYPE( _dt_, _dt_str_ ) _dt_,
 typedef enum
 {

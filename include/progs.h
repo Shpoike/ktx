@@ -1141,9 +1141,11 @@ typedef struct gedict_s
 // }
 #endif
 
+#ifdef MVDSV
 // { highlights which clients this entity was visible to
 	unsigned int visclients;
 // }
+#endif
 
 // { teamplay extensions, for server-side mm2
 	teamplay_t tp;
@@ -1170,6 +1172,16 @@ typedef struct gedict_s
 	qbool spawn_effect_queued;
 // }
 } gedict_t;
+
+#ifdef MVDSV
+//maxplayers is limited to 32.
+#define SETUPVISIBILITY(viewer) unsigned int clientFlag = ClientFlag(viewer)
+#define CHECKVISIBILITY(viewee) ((viewee)->visclients & clientFlag)
+#else
+//maxplayers is limited only by colormap (read: to 255)
+#define SETUPVISIBILITY(viewer) intptr_t pvsviewer = NUM_FOR_EDICT(viewer)
+#define CHECKVISIBILITY(viewee) (trap_VisibleTo(pvsviewer, NUM_FOR_EDICT(viewee)))
+#endif
 
 typedef enum
 {

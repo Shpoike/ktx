@@ -51,13 +51,17 @@ field_t expfields[] =
 	{ "gravity", 		FOFS(gravity), 		F_FLOAT },
 	{ "isBot", 			FOFS(isBot), 		F_INT },
 	{ "brokenankle", 	FOFS(brokenankle), 	F_FLOAT },
+#ifdef MVDSV
 	{ "mod_admin", 		FOFS(k_admin), 		F_INT },
+#endif
 	{ "items2", 		FOFS(items2), 		F_FLOAT },
 	{ "hideentity", 	FOFS(hideentity), 	F_INT },
 	{ "trackent", 		FOFS(trackent), 	F_INT },
 	{ "hideplayers", 	FOFS(hideplayers), 	F_INT },
+#ifdef MVDSV
 	{ "visclients", 	FOFS(visclients), 	F_INT },
 	{ "teleported", 	FOFS(teleported), 	F_INT },
+#endif
 	{ NULL }
 };
 
@@ -100,6 +104,41 @@ void SaveLevelStartParams(gedict_t *e);
 
 qbool FTE_sv = false;
 
+qbool haveextensiontab[G_EXTENSIONS_LAST-G_EXTENSIONS_FIRST];
+qbool G_InitExtensions(void)
+{
+	qbool success = true;
+	struct
+	{
+		const char *name;
+		int id;
+	} exttraps[] =
+	{
+		{"SetExtField",			G_SETEXTFIELD},
+		{"GetExtField",			G_GETEXTFIELD},
+		{"ChangeLevelHub",		G_CHANGELEVEL_HUB},
+		{"URI_Query",			G_URI_QUERY},
+		{"particleeffectnum",	G_PARTICLEEFFECTNUM},
+		{"trailparticles",		G_TRAILPARTICLES},
+		{"pointparticles",		G_POINTPARTICLES},
+		{"clientstat",			G_CLIENTSTAT},
+		{"pointerstat",			G_POINTERSTAT},
+		{"VisibleTo",			G_VISIBLETO},
+	};
+	int i;
+	for (i = 0; i < sizeof(exttraps)/sizeof(exttraps[0]); i++)
+		haveextensiontab[exttraps[i].id-G_EXTENSIONS_FIRST] = trap_Map_Extension(exttraps[i].name, exttraps[i].id)>=0;
+
+#ifndef MVDSV
+	if (!HAVEEXTENSION(G_VISIBLETO))
+	{
+		G_cprint("^1server builtin %s is required\n", "VisibleTo");
+		success = false;
+	}
+#endif
+	return success;
+}
+
 /*
  ================
  vmMain
@@ -130,9 +169,12 @@ intptr_t VISIBILITY_VISIBLE vmMain(int command, int arg0, int arg1, int arg2, in
 
 			if (strstr(ezinfokey(world, "*version"), "FTE"))
 			{
-				G_cprint("KTX: FTE server detected\n");
+				G_cprint("^2KTX: FTE server detected, yay!\n");
 				FTE_sv = true;
 			}
+			else G_cprint("^1KTX: FTE server not detected, boo :(\n");
+			if (!G_InitExtensions())
+				return 0;
 
 			G_InitGame(arg0, arg1);
 

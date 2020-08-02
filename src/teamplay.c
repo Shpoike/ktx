@@ -414,7 +414,7 @@ static gedict_t* TeamplayFindPoint(gedict_t *client)
 	unsigned long pointflags = ~0U;
 	vec3_t ang;
 	item_vis_t visitem;
-	unsigned int clientflag = ClientFlag(client);
+	SETUPVISIBILITY(client);
 	float best = -1;
 	gedict_t *bestent = NULL;
 
@@ -453,7 +453,7 @@ static gedict_t* TeamplayFindPoint(gedict_t *client)
 			continue;
 		}
 
-		if (!(e->visclients & clientflag))
+		if (!CHECKVISIBILITY(e))
 		{
 			continue;
 		}
@@ -1254,7 +1254,7 @@ static void TeamplayEnemyPowerup(gedict_t *client)
 static void TeamplaySetEnemyFlags(gedict_t *client)
 {
 	gedict_t *plr = world;
-	unsigned int clientFlag = ClientFlag(client);
+	SETUPVISIBILITY(client);
 	int enemy_items = 0;
 	int enemy_count = 0;
 	int friend_count = 0;
@@ -1265,7 +1265,7 @@ static void TeamplaySetEnemyFlags(gedict_t *client)
 			continue;
 		}
 
-		if (!(plr->visclients & clientFlag))
+		if (!CHECKVISIBILITY(plr))
 		{
 			continue;
 		}
