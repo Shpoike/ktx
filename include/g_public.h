@@ -30,6 +30,12 @@
 //
 // g_public.h -- game module information visible to server
 
+#ifdef _WIN32	//standards are for people that know what they're doing...
+	#define VISIBILITY_VISIBLE __declspec(dllexport)
+#else
+	#define VISIBILITY_VISIBLE __attribute__((visibility("default")))
+#endif
+
 #define	GAME_API_VERSION	15
 
 //===============================================================
